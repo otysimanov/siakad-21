@@ -1,10 +1,11 @@
 from flask import Flask, render_template, url_for, request, jsonify, redirect, flash, session
-from backend.db import db
+from backend.db import db, storage
 
 
 
 
-app = Flask(__name__)
+
+app = Flask(__name__, static_folder='static', static_url_path='')
 
 # ini adalah syarat untuk menggunakan session
 # flash adalah bagian dari session
@@ -28,6 +29,27 @@ def mahasiswa():
             'email' : request.form['email'],
             'jurusan' : request.form['jurusan'],
         }
+
+        # pengecekan apakah gambar ada atau tidak
+        if 'gambar' in request.files and request.files['gambar']:
+            # simpan dalam veriable image
+            image = request.files['gambar']
+            # buat syarat ekstension file
+            ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+            # simpan nama file
+            filename = image.filename
+            # buat lokasi penympanan di storage
+            lokasi = f"mahasiswa/{filename}"
+
+            # ini memisahkan nama file dengan ekstension
+            ext = filename.rsplit('.', 1)[1].lower()
+            # cek ekstension file
+            if ext in ALLOWED_EXTENSIONS:
+                storage.child(lokasi).put(image)
+                data['gambar'] = storage.child(lokasi).get_url(None)
+            else:
+                flash("Foto tidak diperbolehkan", "danger")
+                return redirect(url_for('mahasiswa'))
 
         # db.collection('mahasiswa').add(data)
         db.collection('mahasiswa').document().set(data)
@@ -80,11 +102,15 @@ def edit_mahasiswa(uid):
             'jurusan' : request.form['jurusan'],
         }
 
+        
+           
+
         # db.collection('mahasiswa').add(data)
         db.collection('mahasiswa').document(uid).set(data, merge=True)
         # tambah Flash/Pesan
         flash('Berhasil Edit Data Mahasiswa', 'success')
         return redirect(url_for('mahasiswa'))
+        # return jsonify(request.files)
     # dapatkan data mahasiswa yang mau di edit berdasarkan uid
     mahasiswa = db.collection('mahasiswa').document(uid).get().to_dict()
     # mengirimkan data mahasiswa dari database ke halaman html

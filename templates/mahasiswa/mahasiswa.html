@@ -3,7 +3,7 @@
 {% block _content %}
 <h1>Mahasiswa</h1>
 
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="email" class="form-label">Email</label>
         <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan Email" required>
@@ -19,6 +19,10 @@
     <div class="mb-3">
         <label for="jurusan" class="form-label">Jurusan</label>
         <input type="text" class="form-control" id="jurusan" name="jurusan" placeholder="Masukkan No HP" required>
+    </div>
+    <div class="mb-3">
+        <label for="gambar" class="form-label">Gambar</label>
+        <input type="file" class="form-control" id="gambar" name="gambar">
     </div>
     <div class="mb-3">
         <button type="submit" class="btn btn-primary w-100">Tambah</button>
