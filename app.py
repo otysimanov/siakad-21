@@ -2,13 +2,15 @@ from flask import Flask, render_template, url_for, request, jsonify, redirect, f
 from backend.db import db
 
 
+
+
 app = Flask(__name__)
 
 # ini adalah syarat untuk menggunakan session
 # flash adalah bagian dari session
 app.secret_key = '1n14dalahS3cretK3y'
 
-from backend.auth import authapp
+from backend.auth import authapp, login_required
 
 app.register_blueprint(authapp)
 
@@ -17,7 +19,8 @@ def index():
     return render_template('index.html')
 
 @app.route('/mahasiswa', methods=['GET', 'POST'])
-def mahasiswa():
+@login_required
+def mahasiswa(): 
     if request.method == 'POST':
         data = {
             'nama_lengkap' : request.form['nama_lengkap'],
